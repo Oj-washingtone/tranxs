@@ -17,8 +17,7 @@ const credentials = {
   PASS_KEY: process.env.MPESA_PASS_KEY,
 };
 
-const transaction = new Transactions(credentials, "production");
-
+const transaction = new Transactions(credentials, "production"); // or sandbox for sandbox applications
 transaction
   .stkPush({
     phone: "0712345678",
