@@ -1,11 +1,13 @@
 import axios from "axios";
 
-export default class Transactions {
+export default class Mpesa {
   constructor(credentials, environment = "sandbox") {
     this.credentials = credentials;
-
     this.environment = environment;
-    this.tokenCache = {};
+    this.baseUrl =
+      environment === "production"
+        ? "https://api.safaricom.co.ke"
+        : "https://sandbox.safaricom.co.ke";
   }
 
   async generateToken() {
@@ -14,7 +16,7 @@ export default class Transactions {
     ).toString("base64");
 
     try {
-      const response = await axios.get(this.getAuthUrl(), {
+      const response = await axios.get(`${this.baseUrl}/oauth/v1/generate`, {
         headers: {
           Authorization: `Basic ${auth}`,
           "Content-Type": "application/x-www-form-urlencoded",
@@ -74,11 +76,15 @@ export default class Transactions {
     };
 
     try {
-      const response = await axios.post(this.getTransactionUrl(), payload, {
-        headers: {
-          Authorization: `Bearer ${await this.generateToken()}`,
-        },
-      });
+      const response = await axios.post(
+        `${this.baseUrl}/mpesa/stkpush/v1/processrequest`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${await this.generateToken()}`,
+          },
+        }
+      );
 
       return response.data;
     } catch (error) {
@@ -91,15 +97,5 @@ export default class Transactions {
     return null;
   }
 
-  getAuthUrl() {
-    return this.environment === "production"
-      ? "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-      : "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
-  }
-
-  getTransactionUrl() {
-    return this.environment === "production"
-      ? "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-      : "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
-  }
+  // Mpesa B2C
 }
