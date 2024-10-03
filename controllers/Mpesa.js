@@ -1,11 +1,15 @@
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+import { generateSecurityCredentials } from "../src/Security/SecGen.js";
 
-export default class Transactions {
+export default class Mpesa {
   constructor(credentials, environment = "sandbox") {
     this.credentials = credentials;
-
     this.environment = environment;
-    this.tokenCache = {};
+    this.baseUrl =
+      environment === "production"
+        ? "https://api.safaricom.co.ke"
+        : "https://sandbox.safaricom.co.ke";
   }
 
   async generateToken() {
@@ -14,7 +18,7 @@ export default class Transactions {
     ).toString("base64");
 
     try {
-      const response = await axios.get(this.getAuthUrl(), {
+      const response = await axios.get(`${this.baseUrl}/oauth/v1/generate`, {
         headers: {
           Authorization: `Basic ${auth}`,
           "Content-Type": "application/x-www-form-urlencoded",
@@ -74,11 +78,15 @@ export default class Transactions {
     };
 
     try {
-      const response = await axios.post(this.getTransactionUrl(), payload, {
-        headers: {
-          Authorization: `Bearer ${await this.generateToken()}`,
-        },
-      });
+      const response = await axios.post(
+        `${this.baseUrl}/mpesa/stkpush/v1/processrequest`,
+        payload,
+        {
+          headers: {
+            Authorization: `Bearer ${await this.generateToken()}`,
+          },
+        }
+      );
 
       return response.data;
     } catch (error) {
@@ -91,15 +99,54 @@ export default class Transactions {
     return null;
   }
 
-  getAuthUrl() {
-    return this.environment === "production"
-      ? "https://api.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials"
-      : "https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials";
-  }
+  // Mpesa B2C
 
-  getTransactionUrl() {
-    return this.environment === "production"
-      ? "https://api.safaricom.co.ke/mpesa/stkpush/v1/processrequest"
-      : "https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest";
+  async B2C({
+    phone,
+    amount,
+    resultCallbackUrl,
+    queueTimeOutURL,
+    occasion = "Withdrawal",
+    commandID,
+    remarks = "Withdrawal",
+  }) {
+    const auth = `Bearer ${await this.generateToken()}`;
+    const originatorConversationID = uuidv4();
+
+    const payload = {
+      OriginatorConversationID: originatorConversationID,
+      InitiatorName: this.credentials.B2C_INITIATOR_NAME,
+      SecurityCredential: generateSecurityCredentials(
+        this.credentials.PASS_KEY
+      ),
+      CommandID: commandID,
+      Amount: amount,
+      PartyA: process.env.B2C_SHORTCODE,
+      PartyB: phone,
+      Remarks: remarks,
+      QueueTimeOutURL: queueTimeOutURL,
+      ResultURL: resultCallbackUrl,
+      Occasion: occasion,
+    };
+
+    try {
+      const response = axios.post(
+        `${this.baseUrl}/mpesa/b2c/v3/paymentrequest`,
+        payload,
+        {
+          headers: {
+            Authorization: auth,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "B2C initiator error:",
+        error.response ? error.response.data : error.message
+      );
+      return error.response ? error.response.data : error.message;
+    }
   }
 }

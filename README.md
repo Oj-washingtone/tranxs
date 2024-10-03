@@ -9,7 +9,7 @@
 ### M-pesa STK-push example
 
 ```javascript
-import Transactions from "tranxs";
+import Mpesa from "tranxs";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -21,7 +21,7 @@ const credentials = {
   PASS_KEY: process.env.MPESA_PASS_KEY,
 };
 
-const transaction = new Transactions(credentials, "production"); // or sandbox for sandbox applications
+const transaction = new Mpesa(credentials, "production"); // or sandbox for sandbox applications
 transaction
   .stkPush({
     phone: "0712345678",
