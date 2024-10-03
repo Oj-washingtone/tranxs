@@ -1,4 +1,6 @@
 import axios from "axios";
+import { v4 as uuidv4 } from "uuid";
+import { generateSecurityCredentials } from "../src/Security/SecGen.js";
 
 export default class Mpesa {
   constructor(credentials, environment = "sandbox") {
@@ -98,4 +100,53 @@ export default class Mpesa {
   }
 
   // Mpesa B2C
+
+  async B2C({
+    phone,
+    amount,
+    resultCallbackUrl,
+    queueTimeOutURL,
+    occasion = "Withdrawal",
+    commandID,
+    remarks = "Withdrawal",
+  }) {
+    const auth = `Bearer ${await this.generateToken()}`;
+    const originatorConversationID = uuidv4();
+
+    const payload = {
+      OriginatorConversationID: originatorConversationID,
+      InitiatorName: this.credentials.B2C_INITIATOR_NAME,
+      SecurityCredential: generateSecurityCredentials(
+        this.credentials.PASS_KEY
+      ),
+      CommandID: commandID,
+      Amount: amount,
+      PartyA: process.env.B2C_SHORTCODE,
+      PartyB: phone,
+      Remarks: remarks,
+      QueueTimeOutURL: queueTimeOutURL,
+      ResultURL: resultCallbackUrl,
+      Occasion: occasion,
+    };
+
+    try {
+      const response = axios.post(
+        `${this.baseUrl}/mpesa/b2c/v3/paymentrequest`,
+        payload,
+        {
+          headers: {
+            Authorization: auth,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (error) {
+      console.error(
+        "B2C initiator error:",
+        error.response ? error.response.data : error.message
+      );
+      return error.response ? error.response.data : error.message;
+    }
+  }
 }
