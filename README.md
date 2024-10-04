@@ -11,7 +11,7 @@
 Making the request
 
 ```javascript
-import Mpesa from "tranxs";
+import { Mpesa } from "tranxs";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -40,7 +40,7 @@ transaction
 Making a b2c request
 
 ```javascript
-import { Mpesa } from "./controllers/Mpesa.js";
+import { Mpesa } from "tranxs";
 import dotenv from "dotenv";
 
 const b2c_credentials = {
