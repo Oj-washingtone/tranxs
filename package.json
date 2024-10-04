@@ -1,6 +1,6 @@
 {
   "name": "tranxs",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "main": "app.js",
   "type": "module",
   "scripts": {
@@ -9,7 +9,7 @@
   "keywords": [
     "mpesa",
     "safaricom",
-    "payments", 
+    "payments",
     "transactions",
     "daraja"
   ],
@@ -20,5 +20,8 @@
     "axios": "^1.7.7",
     "dotenv": "^16.4.5",
     "uuid": "^10.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
   }
 }
