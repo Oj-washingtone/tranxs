@@ -55,6 +55,8 @@ Making a b2c request
 import { Mpesa } from "tranxs";
 import dotenv from "dotenv";
 
+dotenv.config();
+
 const b2c_credentials = {
   CONSUMER_KEY: process.env.SANDBOX_KEY,
   CONSUMER_SECRET: process.env.SANDBOX_SECRET,
