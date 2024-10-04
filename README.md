@@ -8,6 +8,8 @@
 
 ### M-pesa STK-push example
 
+Making the request
+
 ```javascript
 import Mpesa from "tranxs";
 import dotenv from "dotenv";
@@ -31,4 +33,46 @@ transaction
   .then((response) => {
     console.log("STK Push Response:", response);
   });
+```
+
+### B2C EXAMPLE
+
+Making a b2c request
+
+```javascript
+import { Mpesa } from "./controllers/Mpesa.js";
+import dotenv from "dotenv";
+
+const b2c_credentials = {
+  CONSUMER_KEY: process.env.SANDBOX_KEY,
+  CONSUMER_SECRET: process.env.SANDBOX_SECRET,
+  BUSINESS_SHORT_CODE: process.env.SANDBOX_BUSINESS_NUMBER,
+  INITIATOR_PASSWORD: process.env.SANDBOX_B2C_INITIATOR_PASSWORD,
+  INITIATOR_NAME: process.env.SANDBOX_B2C_INITIATOR_NAME,
+};
+
+const mpesa = new Mpesa(b2c_credentials, "sandbox"); // or production
+
+mpesa
+  .b2c({
+    phone: "254712028821",
+    amount: 100,
+    resultCallbackUrl: "https://mydomain.com/callback",
+    queueTimeOutURL: "https://mydomain.com/timeout",
+    commandID: "BusinessPayment",
+  })
+  .then((response) => {
+    console.log(response);
+  });
+```
+
+Expected response
+
+```javascript
+{
+  ConversationID: 'AG_20241004_20101e712a4c5b931e70',
+  OriginatorConversationID: '32f3b1ea-f0d7-4c99-b29e-5e3866cf75d6',
+  ResponseCode: '0',
+  ResponseDescription: 'Accept the service request successfully.'
+}
 ```

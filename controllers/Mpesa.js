@@ -2,7 +2,7 @@ import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
 import { generateSecurityCredentials } from "../src/Security/SecGen.js";
 
-export default class Mpesa {
+export class Mpesa {
   constructor(credentials, environment = "sandbox") {
     this.credentials = credentials;
     this.environment = environment;
@@ -44,7 +44,7 @@ export default class Mpesa {
     phone,
     amount,
     callbackUrl,
-    account = "Tranx-helper",
+    account = "Tranxs-001",
     TransactionDesc = "Payment",
   }) {
     const formated_phone = phone.replace(/^0+/, "254");
@@ -101,7 +101,7 @@ export default class Mpesa {
 
   // Mpesa B2C
 
-  async B2C({
+  async b2c({
     phone,
     amount,
     resultCallbackUrl,
@@ -115,13 +115,13 @@ export default class Mpesa {
 
     const payload = {
       OriginatorConversationID: originatorConversationID,
-      InitiatorName: this.credentials.B2C_INITIATOR_NAME,
+      InitiatorName: this.credentials.INITIATOR_NAME,
       SecurityCredential: generateSecurityCredentials(
-        this.credentials.PASS_KEY
+        this.credentials.INITIATOR_PASSWORD
       ),
       CommandID: commandID,
       Amount: amount,
-      PartyA: process.env.B2C_SHORTCODE,
+      PartyA: this.credentials.BUSINESS_SHORT_CODE,
       PartyB: phone,
       Remarks: remarks,
       QueueTimeOutURL: queueTimeOutURL,
@@ -130,7 +130,7 @@ export default class Mpesa {
     };
 
     try {
-      const response = axios.post(
+      const response = await axios.post(
         `${this.baseUrl}/mpesa/b2c/v3/paymentrequest`,
         payload,
         {
