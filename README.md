@@ -55,7 +55,7 @@ const mpesa = new Mpesa(b2c_credentials, "sandbox"); // or production
 
 mpesa
   .b2c({
-    phone: "254712028821",
+    phone: "2547123456789",
     amount: 100,
     resultCallbackUrl: "https://mydomain.com/callback",
     queueTimeOutURL: "https://mydomain.com/timeout",
