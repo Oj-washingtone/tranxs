@@ -8,7 +8,7 @@
 
 ### M-pesa STK-push example
 
-Making the request
+Making STK push request
 
 ```javascript
 import { Mpesa } from "tranxs";
@@ -35,6 +35,18 @@ transaction
   });
 ```
 
+Expected Response
+
+```json
+{
+  "MerchantRequestID": "38d5-4ca6-b9c9-0240a9781f7a24954456",
+  "CheckoutRequestID": "ws_CO_04102024170035818712028821",
+  "ResponseCode": "0",
+  "ResponseDescription": "Success. Request accepted for processing",
+  "CustomerMessage": "Success. Request accepted for processing"
+}
+```
+
 ### B2C EXAMPLE
 
 Making a b2c request
@@ -55,7 +67,7 @@ const mpesa = new Mpesa(b2c_credentials, "sandbox"); // or production
 
 mpesa
   .b2c({
-    phone: "254712028821",
+    phone: "2547123456789",
     amount: 100,
     resultCallbackUrl: "https://mydomain.com/callback",
     queueTimeOutURL: "https://mydomain.com/timeout",
@@ -68,11 +80,11 @@ mpesa
 
 Expected response
 
-```javascript
+```json
 {
-  ConversationID: 'AG_20241004_20101e712a4c5b931e70',
-  OriginatorConversationID: '32f3b1ea-f0d7-4c99-b29e-5e3866cf75d6',
-  ResponseCode: '0',
-  ResponseDescription: 'Accept the service request successfully.'
+  "ConversationID": "AG_20241004_20101e712a4c5b931e70",
+  "OriginatorConversationID": "32f3b1ea-f0d7-4c99-b29e-5e3866cf75d6",
+  "ResponseCode": "0",
+  "ResponseDescription": "Accept the service request successfully."
 }
 ```
