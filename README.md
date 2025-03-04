@@ -29,13 +29,61 @@ transaction
     phone: "0712345678",
     amount: 100,
     callbackUrl: "https://mydomain.com/callback",
+    account: "Any account",
   })
   .then((response) => {
     console.log("STK Push Response:", response);
   });
 ```
 
+Other fields you can pass
+
+| field           | value  | description                                          |
+| --------------- | ------ | ---------------------------------------------------- |
+| TransactionDesc | string | You can describe the transaction in any way you like |
+
+**Note that:** `callbackUrl` is the API endpoint where safaricom will post the results of te transaction.
+
+example result that will be posted by Mpesa to this url is
+
+```json
+{
+  "Body": {
+    "stkCallback": {
+      "MerchantRequestID": "29115-34620561-1",
+      "CheckoutRequestID": "ws_CO_191220191020363925",
+      "ResultCode": 0,
+      "ResultDesc": "The service request is processed successfully.",
+      "CallbackMetadata": {
+        "Item": [
+          {
+            "Name": "Amount",
+            "Value": 1.0
+          },
+          {
+            "Name": "MpesaReceiptNumber",
+            "Value": "NLJ7RT61SV"
+          },
+          {
+            "Name": "TransactionDate",
+            "Value": 20191219102115
+          },
+          {
+            "Name": "PhoneNumber",
+            "Value": 254708374149
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+_Refer to daraja api's documentation under M-Pesa Express_
+
 Expected Response
+
+This shows that you request is successful and Mpesa has initiated an stk push to the number provided
 
 ```json
 {
@@ -79,6 +127,19 @@ mpesa
     console.log(response);
   });
 ```
+
+Other fields you may include
+
+| field     | value  | description                                               |
+| --------- | ------ | --------------------------------------------------------- |
+| commandID | string | `SalaryPayment `, `BusinessPayment` or `PromotionPayment` |
+| remarks   | string | Any additional information you may want to add            |
+| occasion  | string | ny additional information you may want to add             |
+
+**Note:**
+`queueTimeOutURL` is the URL to be specified in your request that will be used by API Proxy to send notification incase the payment request is timed out while awaiting processing in the queue.
+
+`resultCallbackUrl` is the URL to be specified in your request that will be used by M-PESA to send notification upon processing of the payment request.
 
 Expected response
 

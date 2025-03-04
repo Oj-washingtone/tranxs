@@ -44,7 +44,7 @@ export class Mpesa {
     phone,
     amount,
     callbackUrl,
-    account = "Tranxs-001",
+    account = "",
     TransactionDesc = "Payment",
   }) {
     const formated_phone = phone.replace(/^0+/, "254");
