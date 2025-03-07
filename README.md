@@ -131,3 +131,85 @@ Expected response
   "ResponseDescription": "Accept the service request successfully."
 }
 ```
+
+#### Ecpected callbacks from mpesa
+
+##### Successful B2C Result
+
+```json
+{
+  "Result": {
+    "ResultType": 0,
+    "ResultCode": 0,
+    "ResultDesc": "The service request is processed successfully.",
+    "OriginatorConversationID": "10571-7910404-1",
+    "ConversationID": "AG_20191219_00004e48cf7e3533f581",
+    "TransactionID": "NLJ41HAY6Q",
+    "ResultParameters": {
+      "ResultParameter": [
+        {
+          "Key": "TransactionAmount",
+          "Value": 10
+        },
+        {
+          "Key": "TransactionReceipt",
+          "Value": "NLJ41HAY6Q"
+        },
+        {
+          "Key": "B2CRecipientIsRegisteredCustomer",
+          "Value": "Y"
+        },
+        {
+          "Key": "B2CChargesPaidAccountAvailableFunds",
+          "Value": -4510.0
+        },
+        {
+          "Key": "ReceiverPartyPublicName",
+          "Value": "254708374149 - John Doe"
+        },
+        {
+          "Key": "TransactionCompletedDateTime",
+          "Value": "19.12.2019 11:45:50"
+        },
+        {
+          "Key": "B2CUtilityAccountAvailableFunds",
+          "Value": 10116.0
+        },
+        {
+          "Key": "B2CWorkingAccountAvailableFunds",
+          "Value": 900000.0
+        }
+      ]
+    },
+    "ReferenceData": {
+      "ReferenceItem": {
+        "Key": "QueueTimeoutURL",
+        "Value": "https://internalsandbox.safaricom.co.ke/mpesa/b2cresults/v1/submit"
+      }
+    }
+  }
+}
+```
+
+##### on Error
+
+Example error
+
+```json
+{
+  "Result": {
+    "ResultType": 0,
+    "ResultCode": 2001,
+    "ResultDesc": "The initiator information is invalid.",
+    "OriginatorConversationID": "29112-34801843-1",
+    "ConversationID": "AG_20191219_00006c6fddb15123addf",
+    "TransactionID": "NLJ0000000",
+    "ReferenceData": {
+      "ReferenceItem": {
+        "Key": "QueueTimeoutURL",
+        "Value": "https://internalsandbox.safaricom.co.ke/mpesa/b2cresults/v1/submit"
+      }
+    }
+  }
+}
+```
