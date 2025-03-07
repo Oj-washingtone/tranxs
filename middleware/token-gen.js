@@ -24,7 +24,6 @@ const createMpesaToken = async (req, res, next) => {
 
     console.log("Token response:", response.data);
 
-    // If you need to pass the token to the next middleware
     req.token = response.data.access_token;
     next();
   } catch (error) {
