@@ -6,34 +6,47 @@
 
 `npm i tranxs`
 
+### Initializing Mpesa
+
+```javascript
+import { Mpesa } from "tranxs";
+
+const transaction = new Mpesa(
+  {
+    CONSUMER_KEY: "Your-key",
+    CONSUMER_SECRET: "mpesa-consumer-secret",
+    BUSINESS_SHORT_CODE: "Yur-mpesa-business-code",
+    PASS_KEY: "your-mpesa-pass-key",
+  },
+  "production"
+);
+```
+
+**_Note:_** the environments can be `production` or `sandbox`
+
 ### M-pesa STK-push example
 
 Making STK push request
 
 ```javascript
-import { Mpesa } from "tranxs";
-import dotenv from "dotenv";
+const response = await transaction.stkPush({
+  phone: "0712028821",
+  amount: 100,
+  callbackUrl: "https://mydomain.com/callback",
+  account: "Any account",
+});
+```
 
-dotenv.config();
+Expected Response
 
-const credentials = {
-  CONSUMER_KEY: process.env.MPESA_CONSUMER_KEY,
-  CONSUMER_SECRET: process.env.MPESA_CONSUMER_SECRET,
-  BUSINESS_SHORT_CODE: process.env.MPESA_BUSINESS_SHORT_CODE,
-  PASS_KEY: process.env.MPESA_PASS_KEY,
-};
-
-const transaction = new Mpesa(credentials, "production"); // or sandbox for sandbox applications
-transaction
-  .stkPush({
-    phone: "0712345678",
-    amount: 100,
-    callbackUrl: "https://mydomain.com/callback",
-    account: "Any account",
-  })
-  .then((response) => {
-    console.log("STK Push Response:", response);
-  });
+```json
+{
+  "MerchantRequestID": "38d5-4ca6-b9c9-0240a9781f7a24954456",
+  "CheckoutRequestID": "ws_CO_04102024170035818712028821",
+  "ResponseCode": "0",
+  "ResponseDescription": "Success. Request accepted for processing",
+  "CustomerMessage": "Success. Request accepted for processing"
+}
 ```
 
 Other fields you can pass
@@ -81,51 +94,18 @@ example result that will be posted by Mpesa to this url is
 
 _Refer to daraja api's documentation under M-Pesa Express_
 
-Expected Response
-
-This shows that you request is successful and Mpesa has initiated an stk push to the number provided
-
-```json
-{
-  "MerchantRequestID": "38d5-4ca6-b9c9-0240a9781f7a24954456",
-  "CheckoutRequestID": "ws_CO_04102024170035818712028821",
-  "ResponseCode": "0",
-  "ResponseDescription": "Success. Request accepted for processing",
-  "CustomerMessage": "Success. Request accepted for processing"
-}
-```
-
 ### B2C EXAMPLE
 
 Making a b2c request
 
 ```javascript
-import { Mpesa } from "tranxs";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const b2c_credentials = {
-  CONSUMER_KEY: process.env.SANDBOX_KEY,
-  CONSUMER_SECRET: process.env.SANDBOX_SECRET,
-  BUSINESS_SHORT_CODE: process.env.SANDBOX_BUSINESS_NUMBER,
-  INITIATOR_PASSWORD: process.env.SANDBOX_B2C_INITIATOR_PASSWORD,
-  INITIATOR_NAME: process.env.SANDBOX_B2C_INITIATOR_NAME,
-};
-
-const mpesa = new Mpesa(b2c_credentials, "sandbox"); // or production
-
-mpesa
-  .b2c({
-    phone: "2547123456789",
-    amount: 100,
-    resultCallbackUrl: "https://mydomain.com/callback",
-    queueTimeOutURL: "https://mydomain.com/timeout",
-    commandID: "BusinessPayment",
-  })
-  .then((response) => {
-    console.log(response);
-  });
+const response = await transaction.b2c({
+  phone: "2547123456789",
+  amount: 100,
+  resultCallbackUrl: "https://mydomain.com/callback",
+  queueTimeOutURL: "https://mydomain.com/timeout",
+  commandID: "BusinessPayment",
+});
 ```
 
 Other fields you may include
