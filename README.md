@@ -6,33 +6,35 @@
 
 `npm i tranxs`
 
+### Initializing Mpesa
+
+```javascript
+import { Mpesa } from "tranxs";
+
+const transaction = new Mpesa(
+  {
+    CONSUMER_KEY: "Your-key",
+    CONSUMER_SECRET: "mpesa-consumer-secret",
+    BUSINESS_SHORT_CODE: "Yur-mpesa-business-code",
+    PASS_KEY: "your-mpesa-pass-key",
+  },
+  "production"
+);
+```
+
+**_Note:_** the environments can be `production` or `sandbox`
+
 ### M-pesa STK-push example
 
 Making STK push request
 
 ```javascript
-import { Mpesa } from "tranxs";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const credentials = {
-  CONSUMER_KEY: process.env.MPESA_CONSUMER_KEY,
-  CONSUMER_SECRET: process.env.MPESA_CONSUMER_SECRET,
-  BUSINESS_SHORT_CODE: process.env.MPESA_BUSINESS_SHORT_CODE,
-  PASS_KEY: process.env.MPESA_PASS_KEY,
-};
-
-const transaction = new Mpesa(credentials, "production"); // or sandbox for sandbox applications
-transaction
-  .stkPush({
-    phone: "0712345678",
-    amount: 100,
-    callbackUrl: "https://mydomain.com/callback",
-  })
-  .then((response) => {
-    console.log("STK Push Response:", response);
-  });
+const response = await transaction.stkPush({
+  phone: "0712028821",
+  amount: 100,
+  callbackUrl: "https://mydomain.com/callback",
+  account: "Any account",
+});
 ```
 
 Expected Response
@@ -47,38 +49,77 @@ Expected Response
 }
 ```
 
+Other fields you can pass
+
+| field           | value  | description                                          |
+| --------------- | ------ | ---------------------------------------------------- |
+| TransactionDesc | string | You can describe the transaction in any way you like |
+
+**Note that:** `callbackUrl` is the API endpoint where safaricom will post the results of te transaction.
+
+example result that will be posted by Mpesa to this url is
+
+```json
+{
+  "Body": {
+    "stkCallback": {
+      "MerchantRequestID": "29115-34620561-1",
+      "CheckoutRequestID": "ws_CO_191220191020363925",
+      "ResultCode": 0,
+      "ResultDesc": "The service request is processed successfully.",
+      "CallbackMetadata": {
+        "Item": [
+          {
+            "Name": "Amount",
+            "Value": 1.0
+          },
+          {
+            "Name": "MpesaReceiptNumber",
+            "Value": "NLJ7RT61SV"
+          },
+          {
+            "Name": "TransactionDate",
+            "Value": 20191219102115
+          },
+          {
+            "Name": "PhoneNumber",
+            "Value": 254708374149
+          }
+        ]
+      }
+    }
+  }
+}
+```
+
+_Refer to daraja api's documentation under M-Pesa Express_
+
 ### B2C EXAMPLE
 
 Making a b2c request
 
 ```javascript
-import { Mpesa } from "tranxs";
-import dotenv from "dotenv";
-
-dotenv.config();
-
-const b2c_credentials = {
-  CONSUMER_KEY: process.env.SANDBOX_KEY,
-  CONSUMER_SECRET: process.env.SANDBOX_SECRET,
-  BUSINESS_SHORT_CODE: process.env.SANDBOX_BUSINESS_NUMBER,
-  INITIATOR_PASSWORD: process.env.SANDBOX_B2C_INITIATOR_PASSWORD,
-  INITIATOR_NAME: process.env.SANDBOX_B2C_INITIATOR_NAME,
-};
-
-const mpesa = new Mpesa(b2c_credentials, "sandbox"); // or production
-
-mpesa
-  .b2c({
-    phone: "2547123456789",
-    amount: 100,
-    resultCallbackUrl: "https://mydomain.com/callback",
-    queueTimeOutURL: "https://mydomain.com/timeout",
-    commandID: "BusinessPayment",
-  })
-  .then((response) => {
-    console.log(response);
-  });
+const response = await transaction.b2c({
+  phone: "2547123456789",
+  amount: 100,
+  resultCallbackUrl: "https://mydomain.com/callback",
+  queueTimeOutURL: "https://mydomain.com/timeout",
+  commandID: "BusinessPayment",
+});
 ```
+
+Other fields you may include
+
+| field     | value  | description                                               |
+| --------- | ------ | --------------------------------------------------------- |
+| commandID | string | `SalaryPayment `, `BusinessPayment` or `PromotionPayment` |
+| remarks   | string | Any additional information you may want to add            |
+| occasion  | string | ny additional information you may want to add             |
+
+**Note:**
+`queueTimeOutURL` is the URL to be specified in your request that will be used by API Proxy to send notification incase the payment request is timed out while awaiting processing in the queue.
+
+`resultCallbackUrl` is the URL to be specified in your request that will be used by M-PESA to send notification upon processing of the payment request.
 
 Expected response
 
