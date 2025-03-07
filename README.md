@@ -114,7 +114,7 @@ Other fields you may include
 | --------- | ------ | --------------------------------------------------------- |
 | commandID | string | `SalaryPayment `, `BusinessPayment` or `PromotionPayment` |
 | remarks   | string | Any additional information you may want to add            |
-| occasion  | string | ny additional information you may want to add             |
+| occasion  | string | Any additional information you may want to add            |
 
 **Note:**
 `queueTimeOutURL` is the URL to be specified in your request that will be used by API Proxy to send notification incase the payment request is timed out while awaiting processing in the queue.
