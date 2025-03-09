@@ -30,7 +30,7 @@ Making STK push request
 
 ```javascript
 const response = await transaction.stkPush({
-  phone: "0712028821",
+  phone: "0712345678",
   amount: 100,
   callbackUrl: "https://mydomain.com/callback",
   account: "Any account",
