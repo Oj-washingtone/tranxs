@@ -213,3 +213,82 @@ Example error
   }
 }
 ```
+
+### M-pesa C2B URL Registration
+
+This allows your platform to receive notifications made to your till/Paybillnumber.
+
+Here you need to register two urls; Validation URL and Confirmation URL
+
+**_Validation URL_**: This is what is used when a Merchant (Partner) requires to validate the details of the payment before accepting the payment eg (Bank wants to ensure the account you're depositing to exists before accepting the deposit/ payment)
+
+**_Confirmation URL_**: This is used to receive payment notification once payment has been completed successfully on Mpesa
+
+#### Initiating Callback URL Registrations
+
+```javascript
+const response = await transaction.c2bRegisterUrl({
+  ResponseType: "Completed", // Canceled
+  ConfirmationURL: "https://mydomain.com/confirmation", // your callback url
+  ValidationURL: "https://mydomain.com/validation", //your callback url
+});
+```
+
+##### Expected response
+
+```json
+{
+  "OriginatorCoversationID": "7619-37765134-1",
+  "ResponseCode": "0",
+  "ResponseDescription": "success"
+}
+```
+
+**_Note_**: **_ResponseType_** specifies what should happen when your validation url is unreachable by mpesa or did not respond in the required time. Only two values are allowed: **_Completed or Cancelled._** **_Completed_** means M-PESA will automatically complete your transaction, while **_Cancelled_** means M-PESA will automatically cancel the transaction, in the event M-PESA is unable to reach your **_Validation URL_**.
+
+**_Note_**: Transaction validation is an optional feature that needs to be activated on Mpesa by the owner of the shortcode, by emailing safaricom. for more information referr to API docs for C2B URL Registration.
+
+#### Validation Request to your URL
+
+Mpesa will POST the following result to your validation URL
+
+(Example)
+
+```json
+{
+   "TransactionType": "Pay Bill",
+   "TransID":"RKTQDM7W6S",
+   "TransTime":"20191122063845",
+   "TransAmount":"10"
+   "BusinessShortCode": "600638",
+   "BillRefNumber":"invoice008",
+   "InvoiceNumber":"",
+   "OrgAccountBalance":""
+   "ThirdPartyTransID": "",
+   "MSISDN":"25470****149",
+   "FirstName":"John",
+   "MiddleName":""
+   "LastName":"Doe"
+}
+
+```
+
+Your API after receiving this request, it is required to respond with the following when acepting the transaction
+
+```json
+{
+  "ResultCode": "0",
+  "ResultDesc": "Accepted"
+}
+```
+
+and gthe following when rejecting
+
+```json
+{
+  "ResultCode": "C2B00011",
+  "ResultDesc": "Rejected"
+}
+```
+
+Please refer to [Draja API documentation](https://developer.safaricom.co.ke). for further details
