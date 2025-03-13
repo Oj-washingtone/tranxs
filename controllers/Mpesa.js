@@ -88,15 +88,15 @@ export class Mpesa {
         }
       );
 
-      return response.data;
+      return { action: "Mpesa stkPush", response: response.data };
     } catch (error) {
       console.error(
-        "Tranx Mpesa Error:",
+        "Tranxs - Mpesa error:",
         error.response ? error.response.data : error.message
       );
     }
 
-    return null;
+    return;
   }
 
   // Mpesa B2C
@@ -140,13 +140,59 @@ export class Mpesa {
         }
       );
 
-      return response.data;
+      return { action: "Mpesa B2C payment request", reponse: response.data };
     } catch (error) {
       console.error(
-        "B2C initiator error:",
+        "Tranxs - Mpesa error:",
         error.response ? error.response.data : error.message
       );
-      return error.response ? error.response.data : error.message;
     }
+
+    return;
+  }
+
+  // customer to business register urls
+
+  async c2bRegisterUrl({ ResponseType, ConfirmationURL, ValidationURL } = {}) {
+    if (!ResponseType) {
+      throw new Error("Missing required parameters: ResponseType.");
+    }
+
+    if (!ConfirmationURL) {
+      throw new Error("Missing required parameters: ConfirmationURL.");
+    }
+
+    if (!ValidationURL) {
+      throw new Error("Missing required parameters: ValidationURL.");
+    }
+
+    const auth = `Bearer ${await this.generateToken()}`;
+
+    const payload = {
+      ShortCode: this.credentials.BUSINESS_SHORT_CODE,
+      ResponseType,
+      ConfirmationURL,
+      ValidationURL,
+    };
+
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/mpesa/c2b/v1/registerurl`,
+        payload,
+        {
+          headers: {
+            Authorization: auth,
+          },
+        }
+      );
+
+      return { action: "Mpesa C2B URL Registration", response: response.data };
+    } catch (error) {
+      console.error(
+        "Tranxs - Mpesa error:",
+        error.response ? error.response.data : error.message
+      );
+    }
+    return;
   }
 }
