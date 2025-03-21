@@ -195,4 +195,55 @@ export class Mpesa {
     }
     return;
   }
+
+  async B2CAccountTopUp({
+    From,
+    To,
+    amount,
+    remarks,
+    queueTimeOutURL,
+    resultCallbackUrl,
+  }) {
+    const auth = `Bearer ${await this.generateToken()}`;
+
+    const payload = {
+      Initiator: this.credentials.INITIATOR_NAME,
+      SecurityCredential: generateSecurityCredentials(
+        this.credentials.INITIATOR_PASSWORD
+      ),
+      CommandID: "BusinessPayToBulk",
+      SenderIdentifierType: "4",
+      RecieverIdentifierType: "4",
+      Amount: amount,
+      PartyA: From,
+      PartyB: To,
+      // AccountReference: "353353",
+      // Requester: "254708374149",
+      Remarks: remarks,
+      QueueTimeOutURL: queueTimeOutURL,
+      ResultURL: resultCallbackUrl,
+    };
+
+    try {
+      const response = await axios.post(
+        `${this.baseUrl}/mpesa/b2b/v1/paymentrequest`,
+        payload,
+        {
+          headers: {
+            Authorization: auth,
+          },
+        }
+      );
+
+      return {
+        action: "Mpesa B2C Account Top Up",
+        reponse: response.data,
+      };
+    } catch (error) {
+      console.error(
+        "Tranxs - Mpesa error:",
+        error.response ? error.response.data : error.message
+      );
+    }
+  }
 }
