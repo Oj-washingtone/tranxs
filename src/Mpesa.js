@@ -1,6 +1,6 @@
 import axios from "axios";
 import { v4 as uuidv4 } from "uuid";
-import { generateSecurityCredentials } from "../src/Security/SecGen.js";
+import { generateSecurityCredentials } from "./Security/SecGen.js";
 
 export class Mpesa {
   constructor(credentials, environment = "sandbox") {
@@ -40,6 +40,21 @@ export class Mpesa {
     return null;
   }
 
+  async requestMpesaAPI(endpoint, payload) {
+    const token = await this.generateToken();
+    if (!token) throw new Error("Unable to authenticate with Mpesa API.");
+
+    try {
+      const response = await axios.post(`${this.baseUrl}${endpoint}`, payload, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      return response.data;
+    } catch (error) {
+      throw new Error(error?.response?.data || error.message);
+    }
+  }
+
+  // Mpesa STK Push
   async stkPush({
     phone,
     amount,
@@ -77,30 +92,16 @@ export class Mpesa {
       TransactionDesc: TransactionDesc,
     };
 
-    try {
-      const response = await axios.post(
-        `${this.baseUrl}/mpesa/stkpush/v1/processrequest`,
-        payload,
-        {
-          headers: {
-            Authorization: `Bearer ${await this.generateToken()}`,
-          },
-        }
-      );
-
-      return { action: "Mpesa stkPush", response: response.data };
-    } catch (error) {
-      console.error(
-        "Tranxs - Mpesa error:",
-        error.response ? error.response.data : error.message
-      );
-    }
-
-    return;
+    return {
+      action: "Tranxs - Mpesa STK Push",
+      response: await this.requestMpesaAPI(
+        "/mpesa/stkpush/v1/processrequest",
+        payload
+      ),
+    };
   }
 
   // Mpesa B2C
-
   async b2c({
     phone,
     amount,
@@ -110,11 +111,8 @@ export class Mpesa {
     commandID,
     remarks = "Withdrawal",
   }) {
-    const auth = `Bearer ${await this.generateToken()}`;
-    const originatorConversationID = uuidv4();
-
     const payload = {
-      OriginatorConversationID: originatorConversationID,
+      OriginatorConversationID: uuidv4(),
       InitiatorName: this.credentials.INITIATOR_NAME,
       SecurityCredential: generateSecurityCredentials(
         this.credentials.INITIATOR_PASSWORD
@@ -129,30 +127,16 @@ export class Mpesa {
       Occasion: occasion,
     };
 
-    try {
-      const response = await axios.post(
-        `${this.baseUrl}/mpesa/b2c/v3/paymentrequest`,
-        payload,
-        {
-          headers: {
-            Authorization: auth,
-          },
-        }
-      );
-
-      return { action: "Mpesa B2C payment request", reponse: response.data };
-    } catch (error) {
-      console.error(
-        "Tranxs - Mpesa error:",
-        error.response ? error.response.data : error.message
-      );
-    }
-
-    return;
+    return {
+      action: "Tranxs - Mpesa B2C transaction",
+      response: await this.requestMpesaAPI(
+        "/mpesa/b2c/v3/paymentrequest",
+        payload
+      ),
+    };
   }
 
   // customer to business register urls
-
   async c2bRegisterUrl({ ResponseType, ConfirmationURL, ValidationURL } = {}) {
     if (!ResponseType) {
       throw new Error("Missing required parameters: ResponseType.");
@@ -166,8 +150,6 @@ export class Mpesa {
       throw new Error("Missing required parameters: ValidationURL.");
     }
 
-    const auth = `Bearer ${await this.generateToken()}`;
-
     const payload = {
       ShortCode: this.credentials.BUSINESS_SHORT_CODE,
       ResponseType,
@@ -175,25 +157,13 @@ export class Mpesa {
       ValidationURL,
     };
 
-    try {
-      const response = await axios.post(
-        `${this.baseUrl}/mpesa/c2b/v1/registerurl`,
-        payload,
-        {
-          headers: {
-            Authorization: auth,
-          },
-        }
-      );
-
-      return { action: "Mpesa C2B URL Registration", response: response.data };
-    } catch (error) {
-      console.error(
-        "Tranxs - Mpesa error:",
-        error.response ? error.response.data : error.message
-      );
-    }
-    return;
+    return {
+      action: "Tranxs - Mpesa C2B url registration",
+      response: await this.requestMpesaAPI(
+        "/mpesa/c2b/v1/registerurl",
+        payload
+      ),
+    };
   }
 
   async B2CAccountTopUp({
@@ -204,8 +174,6 @@ export class Mpesa {
     queueTimeOutURL,
     resultCallbackUrl,
   }) {
-    const auth = `Bearer ${await this.generateToken()}`;
-
     const payload = {
       Initiator: this.credentials.INITIATOR_NAME,
       SecurityCredential: generateSecurityCredentials(
@@ -224,26 +192,12 @@ export class Mpesa {
       ResultURL: resultCallbackUrl,
     };
 
-    try {
-      const response = await axios.post(
-        `${this.baseUrl}/mpesa/b2b/v1/paymentrequest`,
-        payload,
-        {
-          headers: {
-            Authorization: auth,
-          },
-        }
-      );
-
-      return {
-        action: "Mpesa B2C Account Top Up",
-        reponse: response.data,
-      };
-    } catch (error) {
-      console.error(
-        "Tranxs - Mpesa error:",
-        error.response ? error.response.data : error.message
-      );
-    }
+    return {
+      action: "Tranxs - Mpesa B2C AccountTopUp",
+      response: await this.requestMpesaAPI(
+        "/mpesa/b2b/v1/paymentrequest",
+        payload
+      ),
+    };
   }
 }

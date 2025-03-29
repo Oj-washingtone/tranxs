@@ -1,2 +1,2 @@
-import { Mpesa } from "./controllers/Mpesa.js";
+import { Mpesa } from "./src/Mpesa.js";
 export { Mpesa };
