@@ -17,6 +17,11 @@ const transaction = new Mpesa(
     CONSUMER_SECRET: "mpesa-consumer-secret",
     BUSINESS_SHORT_CODE: "Yur-mpesa-business-code",
     PASS_KEY: "your-mpesa-pass-key",
+
+    // for b2c transactions include initiator name and password(This should be username and password of a account on mpesa portal with business manager role  for that organization)
+
+    INITIATOR_NAME: "your initiator name",
+    INITIATOR_PASSWORD: "Initiatot password",
   },
   "production"
 );
