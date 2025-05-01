@@ -50,7 +50,19 @@ export class Mpesa {
       });
       return response.data;
     } catch (error) {
-      throw new Error(error?.response?.data || error.message);
+      const status = error?.response?.status;
+      const data = error?.response?.data;
+
+      const message =
+        typeof data === "object"
+          ? JSON.stringify(data, null, 2)
+          : data || error.message;
+
+      throw new Error(
+        `[Tranxs Error] ${
+          status ? `Status: ${status}, ` : ""
+        }Message: ${message}`
+      );
     }
   }
 
