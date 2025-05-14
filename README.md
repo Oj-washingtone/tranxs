@@ -8,22 +8,37 @@
 
 ### Initializing Mpesa
 
-```javascript
-import { Mpesa } from "tranxs";
+### Change in Initialization (v2.0.0)
 
-const transaction = new Mpesa(
+In version 2.0.0, we’ve changed the way you initialize and used.
+for users
+
+#### Previous Method (v1.x.x):
+
+```js
+import { Mpesa } from "tranxs ";
+
+const mpesa = new Mpesa({ ... }, "sandbox");
+```
+
+#### New initialization style
+
+```javascript
+import { useMpesa } from "tranxs";
+
+const mpesa = useMpesa(
   {
     CONSUMER_KEY: "Your-key",
     CONSUMER_SECRET: "mpesa-consumer-secret",
     BUSINESS_SHORT_CODE: "Yur-mpesa-business-code",
-    PASS_KEY: "your-mpesa-pass-key",
+    PASS_KEY: "your-mpesa-pass-key", // note required for B2C transactions
 
     // for b2c transactions include initiator name and password(This should be username and password of a account on mpesa portal with business manager role  for that organization)
 
     INITIATOR_NAME: "your initiator name",
     INITIATOR_PASSWORD: "Initiatot password",
   },
-  "production"
+  "production" // or sandbox
 );
 ```
 
@@ -34,7 +49,7 @@ const transaction = new Mpesa(
 Making STK push request
 
 ```javascript
-const response = await transaction.stkPush({
+const response = await mpesa.stkPush({
   phone: "0712345678",
   amount: 100,
   callbackUrl: "https://mydomain.com/callback",
@@ -104,7 +119,7 @@ _Refer to daraja api's documentation under M-Pesa Express_
 Making a b2c request
 
 ```javascript
-const response = await transaction.b2c({
+const response = await mpesa.b2c({
   phone: "2547123456789",
   amount: 100,
   resultCallbackUrl: "https://mydomain.com/callback",
@@ -232,7 +247,7 @@ Here you need to register two urls; Validation URL and Confirmation URL
 #### Initiating Callback URL Registrations
 
 ```javascript
-const response = await transaction.c2bRegisterUrl({
+const response = await mpesa.c2bRegisterUrl({
   ResponseType: "Completed", // Canceled
   ConfirmationURL: "https://mydomain.com/confirmation", // your callback url
   ValidationURL: "https://mydomain.com/validation", //your callback url

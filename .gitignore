@@ -1,3 +1,4 @@
 /node_modules
 .env
-testing.js
+/src/testing.ts
+/dist

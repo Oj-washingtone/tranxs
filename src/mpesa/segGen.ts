@@ -1,15 +1,11 @@
 import fs from "fs";
 import path from "path";
 import { publicEncrypt, constants } from "crypto";
-import { fileURLToPath } from "url";
+// const __dirname = path.resolve();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-export function generateSecurityCredentials(PASS_KEY) {
+export function generateSecurityCredentials(password: string): string {
   const secFile = path.join(__dirname, "cert.cer");
-
-  let publicKey;
+  let publicKey: string;
 
   try {
     publicKey = fs.readFileSync(secFile, "utf8");
@@ -18,7 +14,7 @@ export function generateSecurityCredentials(PASS_KEY) {
     throw error;
   }
 
-  const buffer = Buffer.from(PASS_KEY);
+  const buffer = Buffer.from(password);
   const encryption = publicEncrypt(
     {
       key: publicKey,
