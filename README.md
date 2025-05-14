@@ -21,7 +21,7 @@ import { Mpesa } from "tranxs ";
 const mpesa = new Mpesa({ ... }, "sandbox");
 ```
 
-#### New initialization style
+#### New initialization style (v2.x.x)
 
 ```javascript
 import { useMpesa } from "tranxs";
@@ -31,7 +31,7 @@ const mpesa = useMpesa(
     CONSUMER_KEY: "Your-key",
     CONSUMER_SECRET: "mpesa-consumer-secret",
     BUSINESS_SHORT_CODE: "Yur-mpesa-business-code",
-    PASS_KEY: "your-mpesa-pass-key", // note required for B2C transactions
+    PASS_KEY: "your-mpesa-pass-key", // not required for B2C transactions
 
     // for b2c transactions include initiator name and password(This should be username and password of a account on mpesa portal with business manager role  for that organization)
 
