@@ -99,8 +99,10 @@ export class Mpesa {
       PhoneNumber: phone,
       CallBackURL: options.callbackUrl,
       AccountReference: options.account,
-      TransactionDesc: options.TransactionDesc,
+      TransactionDesc: options.TransactionDesc || "",
     };
+
+    console.log(payload);
 
     return {
       action: "Tranxs - Mpesa STK Push",
