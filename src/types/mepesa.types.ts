@@ -26,3 +26,11 @@ export interface B2CRequestOptions {
   commandID: B2CCommandID;
   remarks?: string;
 }
+
+type ResponseType = "Cancelled" | "Completed";
+
+export interface C2BRegisterUrlOptions {
+  responseType: ResponseType;
+  confirmationURL: string;
+  validationURL: string;
+}
