@@ -56,7 +56,7 @@ const response = await mpesa.stkPush({
   amount: 100,
   callbackUrl: "https://mydomain.com/callback",
   account: "Any account",
-  TransactionDesc: "Mother's day  tip", // optional
+  TransactionDesc: "Mother's day  tip",
 });
 ```
 
