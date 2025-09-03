@@ -102,8 +102,6 @@ export class Mpesa {
       TransactionDesc: options.TransactionDesc || "",
     };
 
-    console.log(payload);
-
     return {
       action: "Tranxs - Mpesa STK Push",
       response: await this.requestMpesaAPI(
