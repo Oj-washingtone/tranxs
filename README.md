@@ -57,8 +57,14 @@ const response = await mpesa.stkPush({
   callbackUrl: "https://mydomain.com/callback",
   account: "Any account",
   TransactionDesc: "Mother's day  tip",
+  TransactionType: "CustomerPayBillOnline", //or "CustomerBuyGoodsOnline" when dealing with till Numbers and not paybill. the default value is CustomerPayBillOnline for paybill numbers,
+
+  PartyB: "1234", // Provide if you choose CustomerBuyGoodsOnline,
+  // if working with till numbers then PartyB is the store number
 });
 ```
+
+TransactionType
 
 Expected Response
 

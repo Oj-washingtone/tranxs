@@ -7,12 +7,16 @@ export interface Credentials {
   INITIATOR_PASSWORD?: string;
 }
 
+type TransactionType = "CustomerPayBillOnline" | "CustomerBuyGoodsOnline";
+
 export interface STKPushRequestBody {
   phone: string;
   amount: number;
   callbackUrl: string;
   account?: string;
   TransactionDesc?: string;
+  TransactionType?: TransactionType;
+  PartyB?: number | string;
 }
 
 type B2CCommandID = "SalaryPayment" | "BusinessPayment" | "PromotionPayment";
