@@ -92,17 +92,15 @@ export class Mpesa {
       BusinessShortCode: this.credentials.BUSINESS_SHORT_CODE,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: "CustomerPayBillOnline",
+      TransactionType: options.TransactionType || "CustomerPayBillOnline",
       Amount: options.amount,
       PartyA: phone,
-      PartyB: this.credentials.BUSINESS_SHORT_CODE,
+      PartyB: options.PartyB || this.credentials.BUSINESS_SHORT_CODE,
       PhoneNumber: phone,
       CallBackURL: options.callbackUrl,
       AccountReference: options.account,
       TransactionDesc: options.TransactionDesc || "",
     };
-
-    console.log(payload);
 
     return {
       action: "Tranxs - Mpesa STK Push",
