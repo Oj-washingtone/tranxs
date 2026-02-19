@@ -46,7 +46,8 @@ export class Mpesa {
       });
 
       this.accessToken = data.access_token;
-      this.tokenExpiry = Date.now() + data.expires_in * 1000;
+      const expiresIn = data.expires_in ?? 3600;
+      this.tokenExpiry = Date.now() + (expiresIn - 60) * 1000;
 
       return this.accessToken;
     } catch (error: any) {
