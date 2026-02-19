@@ -38,3 +38,7 @@ export interface C2BRegisterUrlOptions {
   confirmationURL: string;
   validationURL: string;
 }
+
+export interface TransactionStatusOptions {
+  initiator: string;
+}
