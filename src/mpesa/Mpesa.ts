@@ -15,6 +15,8 @@ export class Mpesa {
   private credentials: Credentials;
   private environment: Environment;
   private baseUrl: string;
+  private accessToken: string | null = null;
+  private tokenExpiry: number | null = null;
 
   constructor(credentials: Credentials, environment: Environment = "sandbox") {
     this.credentials = credentials;
@@ -26,12 +28,16 @@ export class Mpesa {
   }
 
   private async generateToken(): Promise<string | null> {
+    if (this.accessToken && this.tokenExpiry && Date.now() < this.tokenExpiry) {
+      return this.accessToken;
+    }
+
     const auth = Buffer.from(
-      `${this.credentials.CONSUMER_KEY}:${this.credentials.CONSUMER_SECRET}`
+      `${this.credentials.CONSUMER_KEY}:${this.credentials.CONSUMER_SECRET}`,
     ).toString("base64");
 
     try {
-      const response = await axios.get(`${this.baseUrl}/oauth/v1/generate`, {
+      const { data } = await axios.get(`${this.baseUrl}/oauth/v1/generate`, {
         headers: {
           Authorization: `Basic ${auth}`,
           "Content-Type": "application/x-www-form-urlencoded",
@@ -39,11 +45,14 @@ export class Mpesa {
         params: { grant_type: "client_credentials" },
       });
 
-      return response.data.access_token;
+      this.accessToken = data.access_token;
+      this.tokenExpiry = Date.now() + data.expires_in * 1000;
+
+      return this.accessToken;
     } catch (error: any) {
       console.error(
         "Tranx Error:",
-        error.response ? error.response.data : error.message
+        error.response ? error.response.data : error.message,
       );
     }
 
@@ -73,7 +82,7 @@ export class Mpesa {
       throw new Error(
         `[Tranxs Error] ${
           status ? `Status: ${status}, ` : ""
-        }Message: ${message}`
+        }Message: ${message}`,
       );
     }
   }
@@ -83,7 +92,7 @@ export class Mpesa {
     const password = Buffer.from(
       this.credentials.BUSINESS_SHORT_CODE +
         (this.credentials.PASS_KEY || "") +
-        timestamp
+        timestamp,
     ).toString("base64");
 
     const phone = cleanPhoneNumber(options.phone);
@@ -106,7 +115,7 @@ export class Mpesa {
       action: "Tranxs - Mpesa STK Push",
       response: await this.requestMpesaAPI(
         "/mpesa/stkpush/v1/processrequest",
-        payload
+        payload,
       ),
     };
   }
@@ -114,7 +123,7 @@ export class Mpesa {
   // Business to Custommer
   async b2c(options: B2CRequestOptions): Promise<ReturnStructure | any> {
     const securityCredentials = generateSecurityCredentials(
-      this.credentials.INITIATOR_PASSWORD!
+      this.credentials.INITIATOR_PASSWORD!,
     );
 
     const phone = cleanPhoneNumber(options.phone);
@@ -137,13 +146,13 @@ export class Mpesa {
       action: "Tranxs - Mpesa B2C transaction",
       response: await this.requestMpesaAPI(
         "/mpesa/b2c/v3/paymentrequest",
-        payload
+        payload,
       ),
     };
   }
 
   async c2bRegisterUrl(
-    options: C2BRegisterUrlOptions
+    options: C2BRegisterUrlOptions,
   ): Promise<ReturnStructure> {
     if (!options.responseType) {
       throw new Error("Missing required field, responseType");
@@ -168,7 +177,7 @@ export class Mpesa {
       action: "Tranxs - Mpesa C2B url registration",
       response: await this.requestMpesaAPI(
         "/mpesa/c2b/v1/registerurl",
-        payload
+        payload,
       ),
     };
   }
