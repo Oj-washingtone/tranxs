@@ -18,7 +18,7 @@
     "MIGRATION_GUIDES.md"
   ],
   "scripts": {
-    "build": "tsc",
+    "build": "tsc && cp src/mpesa/cert.cer dist/mpesa/",
     "dev": "ts-node src/testing.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
